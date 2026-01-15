@@ -41,15 +41,15 @@
             </li>
             
             <!-- History item -->
-            <li class="">
-	            <a href="#" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="History">
-	                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-	                    <circle cx="12" cy="12" r="10"></circle>
-	                    <polyline points="12 6 12 12 16 14"></polyline>
-	                </svg>
-	                <span class="is-drawer-close:hidden">History Pembelian</span>
-	            </a>
-		        </li>
+            <li class="{{ request()->routeIs('admin.histories.*') ? 'bg-gray-200 rounded-lg' : '' }}">
+                <a href="{{ route('admin.histories.index') }}" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="History">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span class="is-drawer-close:hidden">History Pembelian</span>
+                </a>
+            </li>
         </ul>
 
         <!-- logout -->
