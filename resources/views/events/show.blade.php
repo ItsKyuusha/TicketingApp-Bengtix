@@ -1,5 +1,6 @@
 <x-layouts.app>
   <section class="max-w-7xl mx-auto py-12 px-6">
+    {{-- ===================== BREADCRUMB ===================== --}}
     <nav class="mb-6">
       <div class="breadcrumbs">
         <ul>
@@ -11,251 +12,188 @@
     </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left / Main area -->
+      {{-- ===================== LEFT ===================== --}}
       <div class="lg:col-span-2">
         <div class="card bg-base-100 shadow">
           <figure>
-            <img src="{{ $event->gambar
-      ? asset('storage/' . $event->gambar)
-      : 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp'
-  }}" alt="{{ $event->judul }}" class="w-full h-96 object-cover" />
+            <img
+              src="{{ $event->gambar 
+                  ? asset('images/events/' . $event->gambar) 
+                  : 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp' }}"
+              class="w-full h-96 object-cover"
+              alt="Gambar Event"
+            />
           </figure>
+
           <div class="card-body">
-            <div class="flex justify-between items-start gap-4">
-              <div>
-                <h1 class="text-3xl font-extrabold">{{ $event->judul }}</h1>
-                <p class="text-sm text-gray-500 mt-1">
-                  {{ \Carbon\Carbon::parse($event->tanggal_waktu)->locale('id')->translatedFormat('d F Y, H:i') }} • 📍
-                  {{ $event->lokasi }}
-                </p>
-
-                <div class="mt-3 flex gap-2 items-center">
-                  <span class="badge badge-primary">{{ $event->kategori?->nama ?? 'Tanpa Kategori' }}</span>
-                  <span class="badge">{{ $event->user?->name ?? 'Penyelenggara' }}</span>
-                </div>
-              </div>
-
-            </div>
-
-            <p class="mt-4 text-gray-700 leading-relaxed">{{ $event->deskripsi }}</p>
+            <h1 class="text-3xl font-bold">{{ $event->judul }}</h1>
+            <p class="text-sm text-gray-500">
+              {{ \Carbon\Carbon::parse($event->tanggal_waktu)->translatedFormat('d F Y, H:i') }} • {{ $event->lokasi }}
+            </p>
 
             <div class="divider"></div>
-
             <h3 class="text-xl font-bold">Pilih Tiket</h3>
 
-            <div class="mt-4 space-y-4">
-              @forelse($event->tikets as $tiket)
+            @foreach($event->tikets as $tiket)
               <div class="card card-side shadow-sm p-4 items-center">
                 <div class="flex-1">
                   <h4 class="font-bold">{{ $tiket->tipe }}</h4>
-                  <p class="text-sm text-gray-500">Stok: <span id="stock-{{ $tiket->id }}">{{ $tiket->stok }}</span></p>
-                  <p class="text-sm mt-2">{{ $tiket->keterangan ?? '' }}</p>
+                  <p class="text-sm">Stok: {{ $tiket->stok }}</p>
                 </div>
 
                 <div class="w-44 text-right">
-                  <div class="text-lg font-bold">
-                    {{ $tiket->harga ? 'Rp ' . number_format($tiket->harga, 0, ',', '.') : 'Gratis' }}
+                  <div class="font-bold">
+                    {{ $tiket->harga ? 'Rp '.number_format($tiket->harga,0,',','.') : 'Gratis' }}
                   </div>
 
-                  <div class="mt-3 flex items-center justify-end gap-2">
-                    <button type="button" class="btn btn-sm btn-outline" data-action="dec" data-id="{{ $tiket->id }}"
-                      aria-label="Kurangi satu">−</button>
-                    <input id="qty-{{ $tiket->id }}" type="number" min="0" max="{{ $tiket->stok }}" value="0"
-                      class="input input-bordered w-16 text-center" data-id="{{ $tiket->id }}" />
-                    <button type="button" class="btn btn-sm btn-outline" data-action="inc" data-id="{{ $tiket->id }}"
-                      aria-label="Tambah satu">+</button>
+                  <div class="mt-2 flex justify-end gap-2">
+                    <button data-action="dec" data-id="{{ $tiket->id }}" class="btn btn-sm">−</button>
+                    <input id="qty-{{ $tiket->id }}" data-id="{{ $tiket->id }}" value="0" type="number" class="input w-16 text-center">
+                    <button data-action="inc" data-id="{{ $tiket->id }}" class="btn btn-sm">+</button>
                   </div>
 
-                  <div class="text-sm text-gray-500 mt-2">Subtotal: <span id="subtotal-{{ $tiket->id }}">Rp 0</span>
+                  <div class="text-sm mt-2">
+                    Subtotal: <span id="subtotal-{{ $tiket->id }}">Rp 0</span>
                   </div>
                 </div>
               </div>
-              @empty
-              <div class="alert alert-info">Tiket belum tersedia untuk acara ini.</div>
-              @endforelse
-            </div>
-
+            @endforeach
           </div>
         </div>
       </div>
 
-      <!-- Right / Summary -->
-      <aside class="lg:col-span-1">
-        <div class="card sticky top-24 p-4 bg-base-100 shadow">
-          <h4 class="font-bold text-lg">Ringkasan Pembelian</h4>
-
-          <div class="mt-4">
-            <div class="flex justify-between text-sm text-gray-500"><span>Item</span><span id="summaryItems">0</span>
-            </div>
-            <div class="flex justify-between text-xl font-bold mt-1"><span>Total</span><span id="summaryTotal">Rp
-                0</span></div>
+      {{-- ===================== RIGHT ===================== --}}
+      <aside>
+        <div class="card p-4 shadow sticky top-24">
+          <h4 class="font-bold">Ringkasan</h4>
+          <div class="mt-2 flex justify-between">
+            <span>Item</span><span id="summaryItems">0</span>
           </div>
-
-          <div class="divider"></div>
-
-          <div id="selectedList" class="space-y-2 text-sm text-gray-700">
-            <p class="text-gray-500">Belum ada tiket dipilih</p>
+          <div class="flex justify-between font-bold">
+            <span>Total</span><span id="summaryTotal">Rp 0</span>
           </div>
 
           @auth
-            <button id="checkoutButton" class="btn btn-primary !bg-blue-900 text-white btn-block mt-6" onclick="openCheckout()" disabled>Checkout</button>
+            <button id="checkoutButton" onclick="openCheckout()" disabled class="btn btn-primary mt-4">
+              Checkout
+            </button>
           @else
-            <a href="{{ route('login') }}" class="btn btn-primary btn-block mt-6 text-white">Login untuk Checkout</a>
+            <a href="{{ route('login') }}" class="btn btn-primary mt-4">Login</a>
           @endauth
-
         </div>
       </aside>
     </div>
 
-    <!-- Checkout Modal -->
+    {{-- ===================== MODAL ===================== --}}
     <dialog id="checkout_modal" class="modal">
-      <form method="dialog" class="modal-box">
-        <h3 class="font-bold text-lg">Konfirmasi Pembelian</h3>
-        <div class="mt-4 space-y-2 text-sm">
-          <div id="modalItems">
-            <p class="text-gray-500">Belum ada item.</p>
-          </div>
-
-          <div class="divider"></div>
-          <div class="flex justify-between items-center">
-            <span class="font-bold">Total</span>
-            <span class="font-bold text-lg" id="modalTotal">Rp 0</span>
-          </div>
+      <div class="modal-box">
+        <h3 class="font-bold">Konfirmasi</h3>
+        <div id="modalItems" class="mt-3"></div>
+        <div class="divider"></div>
+        <div class="flex justify-between font-bold">
+          <span>Total</span><span id="modalTotal">Rp 0</span>
         </div>
 
         <div class="modal-action">
-          <button class="btn">Tutup</button>
-          <button type="button" class="btn btn-primary px-4 !bg-blue-900 text-white" id="confirmCheckout">Konfirmasi</button>
+          <button class="btn" onclick="document.getElementById('checkout_modal').close()">Batal</button>
+          <button id="confirmCheckout" class="btn btn-primary">Konfirmasi</button>
         </div>
-      </form>
+      </div>
     </dialog>
-
   </section>
 
+  {{-- ===================== JAVASCRIPT (FIXED) ===================== --}}
   <script>
-    (function () {
-      // Helper to format Indonesian currency
-      const formatRupiah = (value) => {
-        return 'Rp ' + Number(value).toLocaleString('id-ID');
-      }
+  (() => {
+    const format = n => 'Rp ' + Number(n).toLocaleString('id-ID');
 
-      const tickets = {
-        @foreach($event->tikets as $tiket)
-              {{ $tiket->id }}: {
-            id: {{ $tiket->id }},
-            price: {{ $tiket->harga ?? 0 }},
-            stock: {{ $tiket->stok }},
-            tipe: "{{ e($tiket->tipe) }}"
+    const tickets = {
+      @foreach($event->tikets as $tiket)
+      {{ $tiket->id }}: {
+        id: {{ $tiket->id }},
+        price: {{ $tiket->harga ?? 0 }},
+        stock: {{ $tiket->stok }},
+        tipe: "{{ e($tiket->tipe) }}"
+      },
+      @endforeach
+    };
+
+    const summaryItems = document.getElementById('summaryItems');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const checkoutBtn = document.getElementById('checkoutButton');
+    const modal = document.getElementById('checkout_modal');
+    const confirmBtn = document.getElementById('confirmCheckout');
+
+    function update() {
+      let qty = 0, total = 0;
+      Object.values(tickets).forEach(t => {
+        const v = +document.getElementById('qty-'+t.id).value;
+        if (v > 0) {
+          qty += v;
+          total += v * t.price;
+          document.getElementById('subtotal-'+t.id).textContent = format(v*t.price);
+        }
+      });
+      summaryItems.textContent = qty;
+      summaryTotal.textContent = format(total);
+      checkoutBtn.disabled = qty === 0;
+    }
+
+    document.querySelectorAll('[data-action]').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.dataset.id;
+        const input = document.getElementById('qty-'+id);
+        let v = +input.value;
+        if (btn.dataset.action === 'inc' && v < tickets[id].stock) v++;
+        if (btn.dataset.action === 'dec' && v > 0) v--;
+        input.value = v;
+        update();
+      }
+    });
+
+    window.openCheckout = () => {
+      let html = '', total = 0;
+      Object.values(tickets).forEach(t => {
+        const v = +document.getElementById('qty-'+t.id).value;
+        if (v > 0) {
+          html += `<div class="flex justify-between"><span>${t.tipe} x ${v}</span><span>${format(v*t.price)}</span></div>`;
+          total += v * t.price;
+        }
+      });
+      document.getElementById('modalItems').innerHTML = html;
+      document.getElementById('modalTotal').textContent = format(total);
+      modal.showModal();
+    };
+
+    confirmBtn.onclick = async () => {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Memproses...';
+
+      const items = Object.values(tickets)
+        .map(t => ({ tiket_id: t.id, jumlah: +document.getElementById('qty-'+t.id).value }))
+        .filter(i => i.jumlah > 0);
+
+      try {
+        const res = await fetch("{{ route('orders.store') }}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
           },
-        @endforeach
-      };
+          body: JSON.stringify({ event_id: {{ $event->id }}, items })
+        });
 
-    const summaryItemsEl = document.getElementById('summaryItems');
-    const summaryTotalEl = document.getElementById('summaryTotal');
-    const selectedListEl = document.getElementById('selectedList');
-    const checkoutButton = document.getElementById('checkoutButton');
-
-    function updateSummary() {
-      let totalQty = 0;
-      let totalPrice = 0;
-      let selectedHtml = '';
-
-      Object.values(tickets).forEach(t => {
-        const qtyInput = document.getElementById('qty-' + t.id);
-        if (!qtyInput) return;
-        const qty = Number(qtyInput.value || 0);
-        if (qty > 0) {
-          totalQty += qty;
-          totalPrice += qty * t.price;
-          selectedHtml += `<div class="flex justify-between"><span>${t.tipe} x ${qty}</span><span>${formatRupiah(qty * t.price)}</span></div>`;
-        }
-      });
-
-      summaryItemsEl.textContent = totalQty;
-      summaryTotalEl.textContent = formatRupiah(totalPrice);
-      selectedListEl.innerHTML = selectedHtml || '<p class="text-gray-500">Belum ada tiket dipilih</p>';
-      checkoutButton.disabled = totalQty === 0;
-    }
-
-    // Wire up plus/minus buttons and manual input
-    document.querySelectorAll('[data-action="inc"]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = e.currentTarget.dataset.id;
-        const input = document.getElementById('qty-' + id)
-        const info = tickets[id];
-        if (!input || !info) return;
-        let val = Number(input.value || 0);
-        if (val < info.stock) val++;
-        input.value = val;
-        updateTicketSubtotal(id);
-        updateSummary();
-      });
-    });
-
-    document.querySelectorAll('[data-action="dec"]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = e.currentTarget.dataset.id;
-        const input = document.getElementById('qty-' + id);
-        if (!input) return;
-        let val = Number(input.value || 0);
-        if (val > 0) val--;
-        input.value = val;
-        updateTicketSubtotal(id);
-        updateSummary();
-      });
-    });
-
-    document.querySelectorAll('input[id^="qty-"]').forEach(input => {
-      input.addEventListener('change', (e) => {
-        const el = e.currentTarget;
-        const id = el.dataset.id;
-        const info = tickets[id];
-        let val = Number(el.value || 0);
-        if (val < 0) val = 0;
-        if (val > info.stock) val = info.stock;
-        el.value = val;
-        updateTicketSubtotal(id);
-        updateSummary();
-      });
-    });
-
-    function updateTicketSubtotal(id) {
-      const t = tickets[id];
-      const qty = Number(document.getElementById('qty-' + id).value || 0);
-      const subtotalEl = document.getElementById('subtotal-' + id);
-      if (subtotalEl) subtotalEl.textContent = formatRupiah(qty * t.price);
-    }
-
-    // Checkout modal
-    window.openCheckout = function () {
-      const modal = document.getElementById('checkout_modal');
-      // populate modal items
-      const modalItems = document.getElementById('modalItems');
-      const modalTotal = document.getElementById('modalTotal');
-
-      let itemsHtml = '';
-      let total = 0;
-      Object.values(tickets).forEach(t => {
-        const qty = Number(document.getElementById('qty-' + t.id).value || 0);
-        if (qty > 0) {
-          itemsHtml += `<div class="flex justify-between"><span>${t.tipe} x ${qty}</span><span>${formatRupiah(qty * t.price)}</span></div>`;
-          total += qty * t.price;
-        }
-      });
-
-      modalItems.innerHTML = itemsHtml || '<p class="text-gray-500">Belum ada item.</p>';
-      modalTotal.textContent = formatRupiah(total);
-
-      if (typeof modal.showModal === 'function') {
-        modal.showModal();
-      } else {
-        // fallback for older browsers
-        modal.classList.add('modal-open');
+        const data = await res.json();
+        modal.close();
+        window.location.href = data.redirect;
+      } catch {
+        alert('Gagal checkout');
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Konfirmasi';
       }
-    }
+    };
 
-    // init
-    updateSummary();
-    }) ();
+    update();
+  })();
   </script>
 </x-layouts.app>

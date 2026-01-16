@@ -34,16 +34,15 @@
                 </div>
                 <ul tabindex="0" class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
                     <li>
-                        <a href="#" class="justify-between">
+                        <a href="{{ route('orders.index') }}" class="justify-between">
                             Riwayat Pembelian
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            Logout
+                                Logout
                         </a>
-
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                             @csrf
                         </form>
@@ -51,8 +50,5 @@
                 </ul>
             </div>
         @endauth
-
-
-
     </div>
 </div>
