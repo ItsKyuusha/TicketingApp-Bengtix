@@ -17,6 +17,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'event_id',
+        'payment_type_id',
         'order_date',
         'total_harga',
     ];
@@ -41,4 +42,10 @@ class Order extends Model
     {
         return $this->hasMany(DetailOrder::class);
     }
+
+    public function paymentType()
+    {
+        return $this->belongsTo(PaymentType::class, 'payment_type_id');
+    }
+
 }

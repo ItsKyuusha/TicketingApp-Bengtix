@@ -27,8 +27,10 @@
             @foreach($order->detailOrders as $d)
               <div class="flex justify-between items-center">
                 <div>
-                  <div class="font-bold">{{ $d->tiket->ticketType->nama }}</div>
-                  <div class="text-sm text-gray-500">Qty: {{ $d->jumlah }}</div>
+                  <div class="font-bold">Qty: {{ $d->jumlah }}</div>
+                  <div class="font-bold">Jenis Tiket: {{ $d->tiket->ticketType->nama }}</div>
+                  <div class="font-bold">Metode Pembayaran: {{ $order->paymentType->nama ?? '-' }}</div>
+
                 </div>
                 <div class="text-right">
                   <div class="font-bold">Rp {{ number_format($d->subtotal_harga, 0, ',', '.') }}</div>

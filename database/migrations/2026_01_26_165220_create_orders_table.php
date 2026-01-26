@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId("event_id")->constrained()->onDelete('cascade');
+            $table->foreignId('payment_type_id')->nullable()->constrained('payment_types')->nullOnDelete();
             $table->dateTime("order_date");
             $table->decimal('total_harga', 10, 2);
             $table->timestamps();

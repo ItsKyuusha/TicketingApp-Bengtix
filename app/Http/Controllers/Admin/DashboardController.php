@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Order;
 use App\Models\Tiket;
 use App\Models\TicketType;
+use App\Models\PaymentType;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -19,7 +20,8 @@ class DashboardController extends Controller
         $totalEvents = Event::count();
         $totalCategories = \App\Models\Kategori::count();
         $totalTypeTicket = TicketType::count();
+        $totalTypePayment = PaymentType::count();
         $totalOrders = Order::count();
-        return view('admin.dashboard', compact('totalEvents', 'totalCategories', 'totalTypeTicket', 'totalOrders'));
+        return view('admin.dashboard', compact('totalEvents', 'totalCategories', 'totalTypeTicket', 'totalTypePayment', 'totalOrders'));
     }
 }

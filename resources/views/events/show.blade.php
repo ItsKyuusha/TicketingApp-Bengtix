@@ -1,5 +1,6 @@
 <x-layouts.app>
   <section class="max-w-7xl mx-auto py-12 px-6">
+
     {{-- ===================== BREADCRUMB ===================== --}}
     <nav class="mb-6">
       <div class="breadcrumbs">
@@ -12,13 +13,14 @@
     </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
       {{-- ===================== LEFT ===================== --}}
       <div class="lg:col-span-2">
         <div class="card bg-base-100 shadow">
           <figure>
             <img
-              src="{{ $event->gambar 
-                  ? asset('images/events/' . $event->gambar) 
+              src="{{ $event->gambar
+                  ? asset('images/events/' . $event->gambar)
                   : 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp' }}"
               class="w-full h-96 object-cover"
               alt="Gambar Event"
@@ -28,7 +30,8 @@
           <div class="card-body">
             <h1 class="text-3xl font-bold">{{ $event->judul }}</h1>
             <p class="text-sm text-gray-500">
-              {{ \Carbon\Carbon::parse($event->tanggal_waktu)->translatedFormat('d F Y, H:i') }} • {{ $event->lokasi }}
+              {{ \Carbon\Carbon::parse($event->tanggal_waktu)->translatedFormat('d F Y, H:i') }}
+              • {{ $event->lokasi }}
             </p>
 
             <div class="divider"></div>
@@ -48,7 +51,8 @@
 
                   <div class="mt-2 flex justify-end gap-2">
                     <button data-action="dec" data-id="{{ $tiket->id }}" class="btn btn-sm">−</button>
-                    <input id="qty-{{ $tiket->id }}" data-id="{{ $tiket->id }}" value="0" type="number" class="input w-16 text-center">
+                    <input id="qty-{{ $tiket->id }}" value="0" type="number"
+                      class="input w-16 text-center">
                     <button data-action="inc" data-id="{{ $tiket->id }}" class="btn btn-sm">+</button>
                   </div>
 
@@ -58,6 +62,7 @@
                 </div>
               </div>
             @endforeach
+
           </div>
         </div>
       </div>
@@ -66,15 +71,18 @@
       <aside>
         <div class="card p-4 shadow sticky top-24">
           <h4 class="font-bold">Ringkasan</h4>
+
           <div class="mt-2 flex justify-between">
             <span>Item</span><span id="summaryItems">0</span>
           </div>
+
           <div class="flex justify-between font-bold">
             <span>Total</span><span id="summaryTotal">Rp 0</span>
           </div>
 
           @auth
-            <button id="checkoutButton" onclick="openCheckout()" disabled class="btn btn-primary mt-4">
+            <button id="checkoutButton" onclick="openCheckout()" disabled
+              class="btn btn-primary mt-4">
               Checkout
             </button>
           @else
@@ -84,25 +92,45 @@
       </aside>
     </div>
 
-    {{-- ===================== MODAL ===================== --}}
+    {{-- ===================== MODAL CHECKOUT ===================== --}}
     <dialog id="checkout_modal" class="modal">
       <div class="modal-box">
-        <h3 class="font-bold">Konfirmasi</h3>
+        <h3 class="font-bold">Konfirmasi Pesanan</h3>
+
         <div id="modalItems" class="mt-3"></div>
+
         <div class="divider"></div>
+
         <div class="flex justify-between font-bold">
           <span>Total</span><span id="modalTotal">Rp 0</span>
         </div>
 
+        {{-- PILIH PAYMENT --}}
+        <div class="form-control mt-4">
+          <label class="label">
+            <span class="label-text font-semibold">Metode Pembayaran</span>
+          </label>
+          <select id="payment_type" class="select select-bordered w-full">
+            <option value="" disabled selected>Pilih Metode Pembayaran</option>
+            @foreach ($paymentTypes as $type)
+              <option value="{{ $type->id }}">{{ $type->nama }}</option>
+            @endforeach
+          </select>
+        </div>
+
         <div class="modal-action">
-          <button class="btn" onclick="document.getElementById('checkout_modal').close()">Batal</button>
-          <button id="confirmCheckout" class="btn btn-primary">Konfirmasi</button>
+          <button class="btn"
+            onclick="document.getElementById('checkout_modal').close()">Batal</button>
+          <button id="confirmCheckout" class="btn btn-primary">
+            Konfirmasi
+          </button>
         </div>
       </div>
     </dialog>
+
   </section>
 
-  {{-- ===================== JAVASCRIPT (FIXED) ===================== --}}
+  {{-- ===================== JAVASCRIPT ===================== --}}
   <script>
   (() => {
     const format = n => 'Rp ' + Number(n).toLocaleString('id-ID');
@@ -113,7 +141,7 @@
         id: {{ $tiket->id }},
         price: {{ $tiket->harga ?? 0 }},
         stock: {{ $tiket->stok }},
-        tipe: "{{ e($tiket->tipe) }}"
+        name: "{{ e($tiket->ticketType->nama) }}"
       },
       @endforeach
     };
@@ -156,7 +184,10 @@
       Object.values(tickets).forEach(t => {
         const v = +document.getElementById('qty-'+t.id).value;
         if (v > 0) {
-          html += `<div class="flex justify-between"><span>${t.tipe} x ${v}</span><span>${format(v*t.price)}</span></div>`;
+          html += `<div class="flex justify-between">
+            <span>${t.name} x ${v}</span>
+            <span>${format(v*t.price)}</span>
+          </div>`;
           total += v * t.price;
         }
       });
@@ -166,6 +197,12 @@
     };
 
     confirmBtn.onclick = async () => {
+      const paymentTypeId = document.getElementById('payment_type').value;
+      if (!paymentTypeId) {
+        alert('Silakan pilih metode pembayaran');
+        return;
+      }
+
       confirmBtn.disabled = true;
       confirmBtn.textContent = 'Memproses...';
 
@@ -180,7 +217,11 @@
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
           },
-          body: JSON.stringify({ event_id: {{ $event->id }}, items })
+          body: JSON.stringify({
+            event_id: {{ $event->id }},
+            payment_type_id: paymentTypeId,
+            items
+          })
         });
 
         const data = await res.json();
