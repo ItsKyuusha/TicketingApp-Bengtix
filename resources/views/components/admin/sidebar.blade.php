@@ -40,6 +40,18 @@
                 </a>
             </li>
             
+            <!-- Tipe Tiket item -->
+            <li class="{{ request()->routeIs('admin.ticket-types.*') ? 'bg-gray-200 rounded-lg' : '' }}">
+                <a href="{{ route('admin.ticket-types.index') }}" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Kategori">
+                    <!-- icon Tipe Tiket -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 6h11M9 12h11M9 18h11M5 6h.01M5 12h.01M5 18h.01" />
+                    </svg>
+                    <span class="is-drawer-close:hidden">Manajemen Tipe Tiket</span>
+                </a>
+            </li>
+
             <!-- History item -->
             <li class="{{ request()->routeIs('admin.histories.*') ? 'bg-gray-200 rounded-lg' : '' }}">
                 <a href="{{ route('admin.histories.index') }}" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="History">

@@ -37,7 +37,7 @@
             @foreach($event->tikets as $tiket)
               <div class="card card-side shadow-sm p-4 items-center">
                 <div class="flex-1">
-                  <h4 class="font-bold">{{ $tiket->tipe }}</h4>
+                  <h4 class="font-bold">{{ $tiket->ticketType->nama }}</h4>
                   <p class="text-sm">Stok: {{ $tiket->stok }}</p>
                 </div>
 

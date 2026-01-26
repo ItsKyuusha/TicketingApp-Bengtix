@@ -29,9 +29,9 @@ class TiketController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = request()->validate([
+        $validatedData = $request->validate([
             'event_id' => 'required|exists:events,id',
-            'tipe' => 'required|string|max:255',
+            'ticket_type_id' => 'required|exists:ticket_types,id',
             'harga' => 'required|numeric|min:0',
             'stok' => 'required|integer|min:0',
         ]);
