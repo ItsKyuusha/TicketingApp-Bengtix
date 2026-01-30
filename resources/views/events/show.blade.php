@@ -31,7 +31,7 @@
             <h1 class="text-3xl font-bold">{{ $event->judul }}</h1>
             <p class="text-sm text-gray-500">
               {{ \Carbon\Carbon::parse($event->tanggal_waktu)->translatedFormat('d F Y, H:i') }}
-              • {{ $event->lokasi }}
+              • {{ $event->lokasi->nama_lokasi }}
             </p>
 
             <div class="divider"></div>

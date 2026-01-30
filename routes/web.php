@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\TiketController;
 use App\Http\Controllers\Admin\TicketTypeController;
 use App\Http\Controllers\Admin\HistoriesController;
 use App\Http\Controllers\Admin\PaymentTypeController;
+use App\Http\Controllers\Admin\LokasiController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\EventController as UserEventController;
 use App\Http\Controllers\User\OrderController;
@@ -34,6 +35,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('tickets', TiketController::class);
         Route::resource('ticket-types', TicketTypeController::class);
         Route::resource('payment-types', PaymentTypeController::class);
+        Route::resource('lokasi', LokasiController::class);
+
         Route::get('/histories', [HistoriesController::class, 'index'])->name('histories.index');
         Route::get('/histories/{id}', [HistoriesController::class, 'show'])->name('histories.show');
     });

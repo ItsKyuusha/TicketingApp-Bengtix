@@ -1,7 +1,7 @@
 <x-layouts.admin title="Dashboard Admin">
     <div class="container mx-auto p-10">
         <h1 class="text-3xl font-semibold mb-4">Dashboard Admin</h1>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
             <div class="card bg-base-100 card-sm shadow-xs p-2">
                 <div class="card-body">
                     <h2 class="card-title text-md">Total Event</h2>
@@ -20,10 +20,18 @@
                     <p class="font-bold text-4xl">{{ $totalTypeTicket ?? 0 }}</p>
                 </div>
             </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
             <div class="card bg-base-100 card-sm shadow-xs p-2">
                 <div class="card-body">
                     <h2 class="card-title text-md">Total Tipe Pembayaran</h2>
                     <p class="font-bold text-4xl">{{ $totalTypePayment ?? 0 }}</p>
+                </div>
+            </div>
+            <div class="card bg-base-100 card-sm shadow-xs p-2">
+                <div class="card-body">
+                    <h2 class="card-title text-md">Total Lokasi</h2>
+                    <p class="font-bold text-4xl">{{ $totalLokasi ?? 0 }}</p>
                 </div>
             </div>
             <div class="card bg-base-100 card-sm shadow-xs p-2">
